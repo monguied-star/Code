@@ -1,184 +1,114 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Mis Finanzas</title>
-
-manifest.json
-
-https://cdn.jsdelivr.net/npm/chart.jsscript>
-https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.jsscript>
-
-<style>
-body{
-font-family:Arial,sans-serif;
-margin:0;
-padding:15px;
-background:#f4f6f8;
-}
-
-.card{
-background:white;
-padding:15px;
-margin-bottom:15px;
-border-radius:10px;
-box-shadow:0 2px 5px rgba(0,0,0,.1);
-}
-
-input,select,button{
-width:100%;
-padding:10px;
-margin-top:8px;
-box-sizing:border-box;
-}
-
-button{
-background:#0078d4;
-color:white;
-border:none;
-border-radius:5px;
-cursor:pointer;
-}
-
-table{
-width:100%;
-border-collapse:collapse;
-}
-
-th,td{
-padding:8px;
-border-bottom:1px solid #ddd;
-}
-
-.kpis{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:10px;
-}
-
-.kpi{
-background:white;
-padding:15px;
-border-radius:10px;
-text-align:center;
-}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0f766e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Finanzas Pro">
+  <title>Mis Finanzas Pro</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="stylesheet" href="./styles.css">
 </head>
-
 <body>
+  <div id="lockScreen" class="lock hidden">
+    <div class="card lock-card">
+      <div class="brand-mark">$</div><h1>Mis Finanzas Pro</h1>
+      <p class="muted">Ingresa tu PIN para continuar.</p>
+      <input id="pinInput" type="password" inputmode="numeric" maxlength="6" placeholder="PIN">
+      <button id="unlockBtn" class="primary">Desbloquear</button>
+      <p id="pinError" class="error"></p>
+    </div>
+  </div>
 
-<h2>💰 Mis Finanzas</h2>
+  <header class="topbar">
+    <div><small>Control personal</small><h1>Mis Finanzas Pro</h1></div>
+    <button id="themeBtn" class="icon-btn" aria-label="Cambiar tema">◐</button>
+  </header>
 
-<div class="kpis">
-<div class="kpi">
-<h4>Ingresos</h4>
-<span id="totalIngresos">$0</span>
-</div>
+  <main>
+    <section id="view-dashboard" class="view active">
+      <div class="section-head"><div><h2>Resumen</h2><p id="periodText" class="muted"></p></div><input id="monthFilter" type="month"></div>
+      <div class="kpi-grid">
+        <article class="kpi income"><span>Ingresos</span><strong id="kpiIncome">$0</strong></article>
+        <article class="kpi expense"><span>Egresos</span><strong id="kpiExpense">$0</strong></article>
+        <article class="kpi balance"><span>Saldo</span><strong id="kpiBalance">$0</strong></article>
+        <article class="kpi"><span>Ahorro</span><strong id="kpiSavings">0%</strong></article>
+      </div>
+      <div id="budgetAlerts"></div>
+      <div class="chart-grid">
+        <article class="card"><h3>Ingresos vs egresos</h3><canvas id="flowChart"></canvas></article>
+        <article class="card"><h3>Egresos por categoría</h3><canvas id="categoryChart"></canvas></article>
+        <article class="card wide"><h3>Tendencia de 12 meses</h3><canvas id="trendChart"></canvas></article>
+      </div>
+      <article class="card"><div class="section-head"><h3>Movimientos recientes</h3><button data-go="movements" class="link-btn">Ver todos</button></div><div id="recentList" class="movement-list"></div></article>
+    </section>
 
-<div class="kpi">
-<h4>Egresos</h4>
-<span id="totalEgresos">$0</span>
-</div>
+    <section id="view-movements" class="view">
+      <div class="section-head"><h2>Movimientos</h2><button id="newMovementBtn" class="primary compact">+ Nuevo</button></div>
+      <div class="card filters">
+        <input id="searchInput" placeholder="Buscar descripción, categoría o medio">
+        <select id="typeFilter"><option value="">Todos los tipos</option><option>Ingreso</option><option>Egreso</option></select>
+        <input id="dateFrom" type="date"><input id="dateTo" type="date">
+        <button id="clearFiltersBtn">Limpiar</button>
+      </div>
+      <div id="movementList" class="movement-list"></div>
+    </section>
 
-<div class="kpi">
-<h4>Saldo</h4>
-<span id="saldo">$0</span>
-</div>
+    <section id="view-reports" class="view">
+      <h2>Reportes</h2>
+      <div class="card report-controls">
+        <select id="reportPeriod"><option value="day">Diario</option><option value="week">Semanal</option><option value="month" selected>Mensual</option><option value="year">Anual</option></select>
+        <input id="reportDate" type="date">
+        <button id="generateReportBtn" class="primary">Generar</button>
+      </div>
+      <div id="reportSummary" class="kpi-grid"></div>
+      <article class="card"><h3>Detalle del periodo</h3><div id="reportTableWrap" class="table-wrap"></div></article>
+    </section>
 
-<div class="kpi">
-<h4>Movimientos</h4>
-<span id="cantidad">0</span>
-</div>
-</div>
+    <section id="view-planning" class="view">
+      <h2>Planificación</h2>
+      <div class="two-cols">
+        <article class="card"><h3>Presupuesto por categoría</h3><form id="budgetForm"><input id="budgetCategory" required placeholder="Categoría"><input id="budgetAmount" required type="number" min="0" step="100" placeholder="Límite mensual"><button class="primary">Guardar presupuesto</button></form><div id="budgetList"></div></article>
+        <article class="card"><h3>Metas de ahorro</h3><form id="goalForm"><input id="goalName" required placeholder="Nombre de la meta"><input id="goalTarget" required type="number" min="1" step="100" placeholder="Valor objetivo"><input id="goalSaved" required type="number" min="0" step="100" placeholder="Ahorrado"><input id="goalDeadline" type="date"><button class="primary">Guardar meta</button></form><div id="goalList"></div></article>
+      </div>
+    </section>
 
-<div class="card">
+    <section id="view-settings" class="view">
+      <h2>Ajustes y respaldo</h2>
+      <article class="card stack"><h3>Excel</h3><p class="muted">Exporta movimientos, presupuestos y metas. Al importar puedes reemplazar o combinar datos.</p><button id="exportXlsxBtn" class="primary">Exportar Excel</button><label class="file-btn">Importar Excel<input id="importXlsxInput" type="file" accept=".xlsx,.xls"></label><select id="importMode"><option value="merge">Combinar con datos actuales</option><option value="replace">Reemplazar datos actuales</option></select></article>
+      <article class="card stack"><h3>Copia JSON</h3><button id="exportJsonBtn">Descargar copia completa</button><label class="file-btn">Restaurar copia JSON<input id="importJsonInput" type="file" accept="application/json,.json"></label></article>
+      <article class="card stack"><h3>Seguridad</h3><input id="newPin" type="password" inputmode="numeric" maxlength="6" placeholder="PIN de 4 a 6 dígitos"><button id="savePinBtn">Guardar o cambiar PIN</button><button id="removePinBtn" class="danger">Quitar PIN</button></article>
+      <article class="card stack"><h3>Datos</h3><button id="demoBtn">Cargar datos de demostración</button><button id="deleteAllBtn" class="danger">Eliminar todos los datos</button></article>
+      <article class="card"><h3>Sincronización</h3><p class="muted">Esta versión permite respaldar en Excel o JSON. La sincronización automática con OneDrive requiere registrar una aplicación en Microsoft Entra y configurar Microsoft Graph.</p></article>
+    </section>
+  </main>
 
-<h3>Nuevo Movimiento</h3>
+  <nav class="bottom-nav">
+    <button data-view="dashboard" class="active"><span>⌂</span>Inicio</button><button data-view="movements"><span>↕</span>Movimientos</button><button data-view="reports"><span>▥</span>Reportes</button><button data-view="planning"><span>◎</span>Plan</button><button data-view="settings"><span>⚙</span>Ajustes</button>
+  </nav>
 
-<input type="date" id="fecha">
+  <dialog id="movementDialog">
+    <form id="movementForm" method="dialog">
+      <div class="section-head"><h2 id="movementTitle">Nuevo movimiento</h2><button type="button" id="closeDialogBtn" class="icon-btn">×</button></div>
+      <input id="movementId" type="hidden">
+      <label>Fecha<input id="movementDate" type="date" required></label>
+      <label>Tipo<select id="movementType" required><option>Ingreso</option><option>Egreso</option></select></label>
+      <label>Categoría<input id="movementCategory" list="categoryOptions" required placeholder="Ej. Mercado"></label>
+      <datalist id="categoryOptions"></datalist>
+      <label>Medio de pago<select id="movementMethod"><option>Efectivo</option><option>Nequi</option><option>Daviplata</option><option>Débito</option><option>Crédito</option><option>Transferencia</option><option>Otro</option></select></label>
+      <label>Valor<input id="movementAmount" type="number" min="1" step="1" required></label>
+      <label>Descripción<input id="movementDescription" maxlength="120" placeholder="Detalle opcional"></label>
+      <button class="primary" value="default">Guardar</button>
+    </form>
+  </dialog>
 
-<select id="tipo">
-<option>Ingreso</option>
-<option>Egreso</option>
-</select>
-
-<input
-id="categoria"
-placeholder="Categoría">
-
-<select id="medioPago">
-<option>Efectivo</option>
-<option>Nequi</option>
-<option>Daviplata</option>
-<option>Débito</option>
-<option>Crédito</option>
-</select>
-
-<input
-type="number"
-id="valor"
-placeholder="Valor">
-
-<input
-id="descripcion"
-placeholder="Descripción">
-
-<button onclick="guardarRegistro()">
-Guardar
-</button>
-
-</div>
-
-<div class="card">
-
-<button onclick="exportarExcel()">
-Exportar Excel
-</button>
-
-<br><br>
-
-<input
-type="file"
-accept=".xlsx"
-onchange="importarExcel(event)">
-
-</div>
-
-<div class="card">
-<canvas id="chart"></canvas>
-</div>
-
-<div class="card">
-
-<h3>Movimientos</h3>
-
-<table>
-<thead>
-<tr>
-<th>Fecha</th>
-<th>Tipo</th>
-<th>Valor</th>
-</tr>
-</thead>
-
-<tbody id="tabla">
-</tbody>
-</table>
-
-</div>
-
-app.jsscript>
-
-<script>
-2
-if ("serviceWorker" in navigator) {
-3
-navigator.serviceWorker.register("sw.js");
-4
-}
-5
-</script>
-
-</body>
-</html>
+  <div id="toast" class="toast"></div>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="./db.jsscript>
+			./reports.jsscript>
+			./app.jsscript>
+			./categories.jsscript></script>
+</body></html>
