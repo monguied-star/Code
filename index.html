@@ -1,24 +1,184 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0f766e"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Mis Finanzas"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-192.png"><title>Mis Finanzas</title><style>
-:root{--p:#0f766e;--bg:#f3f6f6;--red:#dc2626;--green:#15803d}*{box-sizing:border-box}body{margin:0;background:var(--bg);font:15px system-ui;color:#17202a;padding-bottom:env(safe-area-inset-bottom)}header{background:var(--p);color:#fff;padding:calc(15px + env(safe-area-inset-top)) 16px 15px;position:sticky;top:0;z-index:4}header h1{margin:0 0 10px}nav{display:flex;gap:6px;overflow:auto}button{border:0;border-radius:9px;padding:10px 12px;background:var(--p);color:#fff;font-weight:650}nav button{background:#ffffff22;white-space:nowrap}nav button.on{background:#fff;color:var(--p)}main{max-width:1100px;margin:auto;padding:16px}.page{display:none}.page.on{display:block}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}.card{background:#fff;padding:16px;border-radius:14px;box-shadow:0 4px 16px #00000010;margin-bottom:14px}.card h2,.card h3{margin-top:0}.kpi small{color:#667085}.kpi b{display:block;font-size:1.35rem;margin-top:6px}.green{color:var(--green)}.red{color:var(--red)}form{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}label{font-weight:600;color:#475467}input,select,textarea{width:100%;margin-top:5px;padding:11px;border:1px solid #d0d5dd;border-radius:9px;background:#fff}.full{grid-column:1/-1}.actions,.filters{display:flex;gap:8px;flex-wrap:wrap}.filters>*{flex:1;min-width:130px}.secondary{background:#e8eeee;color:#344054}.danger{background:#fee2e2;color:#991b1b}.table{overflow:auto}table{width:100%;border-collapse:collapse;min-width:740px}th,td{padding:10px;border-bottom:1px solid #eee;text-align:left}td.num{text-align:right;font-weight:bold}.barrow{margin:12px 0}.track{height:10px;background:#e5e7eb;border-radius:8px;overflow:hidden}.track i{display:block;height:100%;background:#14b8a6}.chart{height:220px;display:flex;gap:8px;align-items:end;border-bottom:1px solid #ddd;overflow:auto}.g{flex:1;min-width:45px;text-align:center;font-size:11px;color:#667085}.bars{height:180px;display:flex;align-items:end;justify-content:center;gap:3px}.b{width:15px;min-height:2px}.bi{background:#22c55e}.bo{background:#ef4444}#pwa{display:none;position:fixed;left:12px;right:12px;bottom:12px;background:#17202a;color:#fff;padding:13px;border-radius:12px;z-index:10;max-width:650px;margin:auto;align-items:center;justify-content:space-between;gap:8px}#pwa.show{display:flex}@media(max-width:750px){.grid{grid-template-columns:1fr 1fr}.two,form{grid-template-columns:1fr}.full{grid-column:auto}}@media(max-width:430px){.grid{grid-template-columns:1fr}}@media print{header,.noprint,#pwa{display:none!important}.page{display:none!important}#reports{display:block!important}.card{box-shadow:none}}
-</style></head><body><header><h1>💰 Mis Finanzas</h1><nav><button class="on" data-p="home">Resumen</button><button data-p="moves">Movimientos</button><button data-p="reports">Reportes</button><button data-p="settings">Configuración</button></nav></header><main>
-<section id="home" class="page on"><div class="grid"><div class="card kpi"><small>Saldo total</small><b id="bal">$0</b></div><div class="card kpi"><small>Ingresos del mes</small><b id="inc" class="green">$0</b></div><div class="card kpi"><small>Gastos del mes</small><b id="exp" class="red">$0</b></div><div class="card kpi"><small>Ahorro del mes</small><b id="sav">0%</b></div></div><div class="two"><div class="card"><h3>Últimos 6 meses</h3><div id="homechart" class="chart"></div></div><div class="card"><h3>Gastos por concepto</h3><div id="homecats"></div></div></div></section>
-<section id="moves" class="page"><div class="card"><h2 id="ft">Registrar movimiento</h2><form id="form"><input id="eid" type="hidden"><label>Tipo<select id="type"><option value="gasto">Gasto</option><option value="ingreso">Ingreso</option></select></label><label>Fecha<input id="date" type="date" required></label><label>Valor COP<input id="amount" type="number" min="1" required></label><label>Concepto<input id="concept" list="concepts" required><datalist id="concepts"><option>Alimentación</option><option>Transporte</option><option>Vivienda</option><option>Servicios</option><option>Salud</option><option>Educación</option><option>Entretenimiento</option><option>Salario</option><option>Otros</option></datalist></label><label>Tienda / origen<input id="store"></label><label>Medio de pago<select id="pay"><option>Efectivo</option><option>Tarjeta débito</option><option>Tarjeta crédito</option><option>Transferencia</option><option>Nequi</option><option>Daviplata</option><option>Otro</option></select></label><label class="full">Nota<textarea id="note"></textarea></label><div class="full actions"><button>Guardar</button><button type="button" id="cancel" class="secondary">Cancelar edición</button></div></form></div><div class="card"><h2>Historial</h2><div class="filters noprint"><input id="search" placeholder="Buscar"><select id="filter"><option value="">Todos</option><option value="ingreso">Ingresos</option><option value="gasto">Gastos</option></select><input id="from" type="date"><input id="to" type="date"></div><div class="table"><table><thead><tr><th>Fecha</th><th>Tipo</th><th>Concepto</th><th>Tienda</th><th>Medio</th><th>Valor</th><th></th></tr></thead><tbody id="body"></tbody></table></div></div></section>
-<section id="reports" class="page"><div class="card"><div class="filters noprint"><select id="period"><option value="week">Semanal</option><option value="month" selected>Mensual</option><option value="year">Anual</option></select><input id="rdate" type="date"><button onclick="report()">Actualizar</button><button class="secondary" onclick="print()">Imprimir / PDF</button></div><div class="grid"><div class="card kpi"><small>Ingresos</small><b id="ri" class="green"></b></div><div class="card kpi"><small>Gastos</small><b id="re" class="red"></b></div><div class="card kpi"><small>Balance</small><b id="rb"></b></div><div class="card kpi"><small>Movimientos</small><b id="rc"></b></div></div><div class="two"><div class="card"><h3 id="rt">Evolución</h3><div id="rchart" class="chart"></div></div><div class="card"><h3>Gastos por concepto</h3><div id="rcats"></div></div></div></div></section>
-<section id="settings" class="page"><div class="two"><div class="card"><h2>Presupuesto mensual</h2><label>Valor COP<input id="budget" type="number" min="0"></label><br><button id="savebudget">Guardar</button><p id="budgettext"></p><div class="track"><i id="budgetbar"></i></div></div><div class="card"><h2>Copias de seguridad</h2><div class="actions"><button id="json">Respaldo JSON</button><button id="csv" class="secondary">Exportar CSV</button><label style="background:#e8eeee;padding:10px;border-radius:9px">Importar JSON<input id="import" type="file" accept="application/json" hidden></label><button id="wipe" class="danger">Borrar todo</button></div></div></div></section></main><div id="pwa"><span id="pm"></span><button id="pa"></button></div>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mis Finanzas</title>
+
+manifest.json
+
+https://cdn.jsdelivr.net/npm/chart.jsscript>
+https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.jsscript>
+
+<style>
+body{
+font-family:Arial,sans-serif;
+margin:0;
+padding:15px;
+background:#f4f6f8;
+}
+
+.card{
+background:white;
+padding:15px;
+margin-bottom:15px;
+border-radius:10px;
+box-shadow:0 2px 5px rgba(0,0,0,.1);
+}
+
+input,select,button{
+width:100%;
+padding:10px;
+margin-top:8px;
+box-sizing:border-box;
+}
+
+button{
+background:#0078d4;
+color:white;
+border:none;
+border-radius:5px;
+cursor:pointer;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+th,td{
+padding:8px;
+border-bottom:1px solid #ddd;
+}
+
+.kpis{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+}
+
+.kpi{
+background:white;
+padding:15px;
+border-radius:10px;
+text-align:center;
+}
+</style>
+</head>
+
+<body>
+
+<h2>💰 Mis Finanzas</h2>
+
+<div class="kpis">
+<div class="kpi">
+<h4>Ingresos</h4>
+<span id="totalIngresos">$0</span>
+</div>
+
+<div class="kpi">
+<h4>Egresos</h4>
+<span id="totalEgresos">$0</span>
+</div>
+
+<div class="kpi">
+<h4>Saldo</h4>
+<span id="saldo">$0</span>
+</div>
+
+<div class="kpi">
+<h4>Movimientos</h4>
+<span id="cantidad">0</span>
+</div>
+</div>
+
+<div class="card">
+
+<h3>Nuevo Movimiento</h3>
+
+<input type="date" id="fecha">
+
+<select id="tipo">
+<option>Ingreso</option>
+<option>Egreso</option>
+</select>
+
+<input
+id="categoria"
+placeholder="Categoría">
+
+<select id="medioPago">
+<option>Efectivo</option>
+<option>Nequi</option>
+<option>Daviplata</option>
+<option>Débito</option>
+<option>Crédito</option>
+</select>
+
+<input
+type="number"
+id="valor"
+placeholder="Valor">
+
+<input
+id="descripcion"
+placeholder="Descripción">
+
+<button onclick="guardarRegistro()">
+Guardar
+</button>
+
+</div>
+
+<div class="card">
+
+<button onclick="exportarExcel()">
+Exportar Excel
+</button>
+
+<br><br>
+
+<input
+type="file"
+accept=".xlsx"
+onchange="importarExcel(event)">
+
+</div>
+
+<div class="card">
+<canvas id="chart"></canvas>
+</div>
+
+<div class="card">
+
+<h3>Movimientos</h3>
+
+<table>
+<thead>
+<tr>
+<th>Fecha</th>
+<th>Tipo</th>
+<th>Valor</th>
+</tr>
+</thead>
+
+<tbody id="tabla">
+</tbody>
+</table>
+
+</div>
+
+app.jsscript>
+
 <script>
-const $=x=>document.querySelector(x),$$=x=>document.querySelectorAll(x),K='mf_pwa_tx',S='mf_pwa_settings';let tx=JSON.parse(localStorage.getItem(K)||'[]'),set=JSON.parse(localStorage.getItem(S)||'{"budget":0}');const today=()=>new Date().toISOString().slice(0,10),money=n=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(n||0),safe=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));$('#date').value=$('#rdate').value=today();
-function page(id){$$('.page').forEach(x=>x.classList.toggle('on',x.id===id));$$('nav button').forEach(x=>x.classList.toggle('on',x.dataset.p===id));if(id==='reports')report()}$$('nav button').forEach(x=>x.onclick=()=>page(x.dataset.p));
-function totals(a){return a.reduce((o,x)=>(o[x.type]+=+x.amount,o),{ingreso:0,gasto:0})}function save(){localStorage.setItem(K,JSON.stringify(tx));render()}function reset(){$('#form').reset();$('#date').value=today();$('#eid').value='';$('#ft').textContent='Registrar movimiento'}$('#cancel').onclick=reset;
-$('#form').onsubmit=e=>{e.preventDefault();let x={id:$('#eid').value||crypto.randomUUID(),type:$('#type').value,date:$('#date').value,amount:+$('#amount').value,concept:$('#concept').value.trim(),store:$('#store').value.trim(),pay:$('#pay').value,note:$('#note').value.trim()};let i=tx.findIndex(v=>v.id===x.id);i<0?tx.push(x):tx[i]=x;save();reset()};
-function edit(id){let x=tx.find(v=>v.id===id);Object.keys(x).forEach(k=>$('#'+({id:'eid',pay:'pay'}[k]||k))&&($('#'+({id:'eid',pay:'pay'}[k]||k)).value=x[k]));$('#ft').textContent='Editar movimiento';scrollTo(0,0)}function del(id){if(confirm('¿Eliminar este movimiento?')){tx=tx.filter(x=>x.id!==id);save()}}
-function list(){let q=$('#search').value.toLowerCase(),f=$('#filter').value,a=$('#from').value,b=$('#to').value,data=tx.filter(x=>(!q||[x.concept,x.store,x.pay,x.note].join(' ').toLowerCase().includes(q))&&(!f||x.type===f)&&(!a||x.date>=a)&&(!b||x.date<=b)).sort((x,y)=>y.date.localeCompare(x.date));$('#body').innerHTML=data.length?data.map(x=>`<tr><td>${x.date}</td><td>${x.type}</td><td>${safe(x.concept)}</td><td>${safe(x.store)}</td><td>${safe(x.pay)}</td><td class="num ${x.type==='ingreso'?'green':'red'}">${money(x.amount)}</td><td><button class="secondary" onclick="edit('${x.id}')">Editar</button> <button class="danger" onclick="del('${x.id}')">×</button></td></tr>`).join(''):'<tr><td colspan="7">Sin movimientos</td></tr>'}['search','filter','from','to'].forEach(x=>$('#'+x).oninput=list);
-function cats(a){let c={};a.filter(x=>x.type==='gasto').forEach(x=>c[x.concept]=(c[x.concept]||0)+x.amount);let mx=Math.max(1,...Object.values(c));return Object.entries(c).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="barrow"><b>${safe(k)}</b> · ${money(v)}<div class="track"><i style="width:${v/mx*100}%"></i></div></div>`).join('')||'<p>Sin gastos.</p>'}function chart(g){let mx=Math.max(1,...g.flatMap(x=>[x.i,x.e]));return g.map(x=>`<div class="g"><div class="bars"><i class="b bi" style="height:${x.i/mx*100}%"></i><i class="b bo" style="height:${x.e/mx*100}%"></i></div>${x.l}</div>`).join('')}
-function dashboard(){let n=new Date(),key=today().slice(0,7),m=tx.filter(x=>x.date.startsWith(key)),all=totals(tx),mt=totals(m);$('#bal').textContent=money(all.ingreso-all.gasto);$('#inc').textContent=money(mt.ingreso);$('#exp').textContent=money(mt.gasto);$('#sav').textContent=(mt.ingreso?Math.round((mt.ingreso-mt.gasto)/mt.ingreso*100):0)+'%';$('#homecats').innerHTML=cats(m);let g=[];for(let j=5;j>=0;j--){let d=new Date(n.getFullYear(),n.getMonth()-j,1),k=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'),t=totals(tx.filter(x=>x.date.startsWith(k)));g.push({l:d.toLocaleDateString('es',{month:'short'}),i:t.ingreso,e:t.gasto})}$('#homechart').innerHTML=chart(g)}
-const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');function report(){let d=new Date($('#rdate').value+'T12:00'),p=$('#period').value,s,e;if(p==='week'){s=new Date(d);s.setDate(d.getDate()-((d.getDay()+6)%7));e=new Date(s);e.setDate(s.getDate()+6)}else if(p==='month'){s=new Date(d.getFullYear(),d.getMonth(),1);e=new Date(d.getFullYear(),d.getMonth()+1,0)}else{s=new Date(d.getFullYear(),0,1);e=new Date(d.getFullYear(),11,31)}let a=tx.filter(x=>x.date>=iso(s)&&x.date<=iso(e)),t=totals(a);$('#ri').textContent=money(t.ingreso);$('#re').textContent=money(t.gasto);$('#rb').textContent=money(t.ingreso-t.gasto);$('#rc').textContent=a.length;$('#rcats').innerHTML=cats(a);let g=[];if(p==='year'){for(let j=0;j<12;j++){let k=d.getFullYear()+'-'+String(j+1).padStart(2,'0'),z=totals(a.filter(x=>x.date.startsWith(k)));g.push({l:new Date(d.getFullYear(),j,1).toLocaleDateString('es',{month:'short'}),i:z.ingreso,e:z.gasto})}}else{let days=p==='week'?7:e.getDate();for(let j=0;j<days;j++){let z=new Date(s);z.setDate(s.getDate()+j);let t=totals(a.filter(x=>x.date===iso(z)));g.push({l:p==='week'?z.toLocaleDateString('es',{weekday:'short'}):z.getDate(),i:t.ingreso,e:t.gasto})}}$('#rchart').innerHTML=chart(g);$('#rt').textContent='Evolución · '+iso(s)+' a '+iso(e)}$('#period').onchange=$('#rdate').onchange=report;
-function settings(){let spent=totals(tx.filter(x=>x.date.startsWith(today().slice(0,7)))).gasto,b=+set.budget||0,p=b?spent/b*100:0;$('#budget').value=b||'';$('#budgettext').textContent=b?`Usado ${money(spent)} de ${money(b)} (${Math.round(p)}%)`:'Configura tu presupuesto.';$('#budgetbar').style.width=Math.min(100,p)+'%'}$('#savebudget').onclick=()=>{set.budget=+$('#budget').value||0;localStorage.setItem(S,JSON.stringify(set));settings()};
-function download(n,c,t){let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([c],{type:t}));a.download=n;a.click()}$('#json').onclick=()=>download('respaldo-finanzas.json',JSON.stringify({transactions:tx,settings:set},null,2),'application/json');$('#csv').onclick=()=>download('finanzas.csv','﻿fecha;tipo;concepto;tienda;medio;valor;nota
-'+tx.map(x=>[x.date,x.type,x.concept,x.store,x.pay,x.amount,x.note].map(v=>'"'+String(v||'').replaceAll('"','""')+'"').join(';')).join('
-'),'text/csv');$('#import').onchange=async e=>{try{let j=JSON.parse(await e.target.files[0].text());tx=j.transactions;set=j.settings||set;localStorage.setItem(S,JSON.stringify(set));save()}catch{alert('Respaldo inválido')}};$('#wipe').onclick=()=>{if(confirm('¿Borrar todo?')){tx=[];save()}};
-function render(){dashboard();list();report();settings()}render();
-let prompt;const box=$('#pwa');function notice(m,a,fn){$('#pm').textContent=m;$('#pa').textContent=a;$('#pa').onclick=fn;box.className='show'}addEventListener('beforeinstallprompt',e=>{e.preventDefault();prompt=e;notice('Instala Mis Finanzas como aplicación.','Instalar',async()=>{box.className='';prompt.prompt();await prompt.userChoice;prompt=null})});if(/iphone|ipad|ipod/i.test(navigator.userAgent)&&!navigator.standalone&&!localStorage.iosTip)setTimeout(()=>notice('En Safari toca Compartir y “Agregar a inicio”.','Entendido',()=>{localStorage.iosTip=1;box.className=''}),900);if('serviceWorker'in navigator)addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js'));
-</script></body></html>
+2
+if ("serviceWorker" in navigator) {
+3
+navigator.serviceWorker.register("sw.js");
+4
+}
+5
+</script>
+
+</body>
+</html>
